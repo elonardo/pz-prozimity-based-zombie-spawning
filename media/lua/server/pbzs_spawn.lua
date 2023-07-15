@@ -1,3 +1,5 @@
+pbzs_timer = 0
+
 local function pbzs_main()
     pbzs_heatmap()
     
@@ -35,6 +37,7 @@ local function pbzs_heatmap()
     for _, add in ipairs(add_01) do
         pbzs_heatmap[add] = (pbzs_heatmap[add] or 0) + 1
     end
+    print(pbzs_heatmap)
 end
 
 local function pbzs_calculatecells(playerLocation)
