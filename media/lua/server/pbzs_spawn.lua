@@ -4,7 +4,7 @@ local function pbzs_main()
     --spawn zombies every 4-8 hours
     --math.randomseed(os.time())
     --pbzs_timer = pbzs_timer + math.random(1,2)
-    pbzs_timer = 0
+    local pbzs_timer = 0
     if pbzs_timer >= 0 then
         pbzs_timer = 0
         pbzs_spawn()
