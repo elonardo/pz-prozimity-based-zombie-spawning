@@ -1,13 +1,11 @@
-pbzs_timer = 0
-
 local function pbzs_main()
     pbzs_heatmap()
     
     --spawn zombies every 4-8 hours
     --math.randomseed(os.time())
     --pbzs_timer = pbzs_timer + math.random(1,2)
-    pbzs_timer = (pbzs_timer or 0) + 8
-    if pbzs_timer >= 8 then
+    pbzs_timer = 0
+    if pbzs_timer >= 0 then
         pbzs_timer = 0
         pbzs_spawn()
     end
@@ -16,6 +14,7 @@ end
 local function pbzs_heatmap()
     --get locations of players
     local playerLocation = player:getCell()
+    print(playerLocation)
     if playerLocation == nil then
         return
     end
