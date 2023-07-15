@@ -1,16 +1,3 @@
-local function pbzs_main()
-    pbzs_heatmap()
-    
-    --spawn zombies every 4-8 hours
-    --math.randomseed(os.time())
-    --pbzs_timer = pbzs_timer + math.random(1,2)
-    local pbzs_timer = 0
-    if pbzs_timer >= 0 then
-        pbzs_timer = 0
-        pbzs_spawn()
-    end
-end
-
 local function pbzs_heatmap()
     --get locations of players
     local playerLocation = player:getCell()
@@ -81,6 +68,19 @@ local function pbzs_spawn(heat, population_multiplier, peak_multiplier, peak_day
 
         --spawn zombies
         addZombiesInOutfit(pbzs_x, pbzs_y, 0, zombie_count, outfit, 50);
+    end
+end
+
+local function pbzs_main()
+    pbzs_heatmap()
+    
+    --spawn zombies every 4-8 hours
+    --math.randomseed(os.time())
+    --pbzs_timer = pbzs_timer + math.random(1,2)
+    local pbzs_timer = 0
+    if pbzs_timer >= 0 then
+        pbzs_timer = 0
+        pbzs_spawn()
     end
 end
 
