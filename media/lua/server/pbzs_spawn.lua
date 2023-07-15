@@ -1,6 +1,6 @@
 local function pbzs_heatmap()
     --get locations of players
-    local playerLocation = player:getCell()
+    local playerLocation = player.getCell()
     print(playerLocation)
     if playerLocation == nil then
         return
