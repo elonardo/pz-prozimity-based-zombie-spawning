@@ -51,6 +51,16 @@ local function pbzs_add_heat(pbzs_player)
     local add_02 = {{player_x+600,player_y+300},{player_x-600,player_y-300},{player_x-600,player_y+300},{player_x+600,player_y-300},{player_x-300,player_y+600},{player_x+300,player_y-600},{player_x+300,player_y+600},{player_x-300,player_y-600}}
     local add_01 = {{player_x+600,player_y+600},{player_x-600,player_y-600},{player_x-600,player_y+600},{player_x+600,player_y-600}}
 
+    --adds heat in the following pattern:
+    --01,02,03,02,01
+    --02,03,05,03,02
+    --03,05,10,05,03
+    --02,03,05,03,02
+    --01,02,03,02,01
+    --at max 10 heat per zombie and 2 decay per hour, this creates 25 zombies the first hour, 13 the second, 5 the third, 1 the fourth and fifth for a total of 45 zombies over 5 hours
+    --at these settings, if you do not kill an average of 45 zombies per hour, the total number of zombies in the world will always increase
+    --really need to get the cell level heat map (instead of square) working so heat can be concentrated.
+
     pbzs_heatmap[add_10] = 10
     for key, value in ipairs(add_05) do
         pbzs_heatmap[value] = 5
