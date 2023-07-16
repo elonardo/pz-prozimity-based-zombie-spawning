@@ -1,87 +1,80 @@
-local function pbzs_heatmap()
-    --get locations of players
-    local playerLocation = player.getCell()
-    print(playerLocation)
-    if playerLocation == nil then
-        return
-    end
+pbzs = pbzs
+pbzs_heatmap = {}
 
-    -- calculate which cells to add heat to
-    local add_10, add_05, add_03, add_02, add_01 = pbzs_calculatecells(playerLocation);
+local function pbzs_spawn()    
+    --get the days elapsed and the population peak day to calculate what percentage of the peak multiplier should be applied
+    day = GameTime.getInstance():getDaysSurvived()
+    local PopulationPeakDay = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakDay"):getValue()
+    peak_percentage = ((1 + day)/PopulationPeakDay)
+    peak_percentage_multiplier = math.min(unpack({1, peak_percentage}))
+    --get the population peak multiplier and population multiplier
+    local PopulationPeakMultiplier = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakMultiplier"):getValue()
+    local PopulationMultiplier = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationMultiplier"):getValue()
 
-    --increment the affected cells
-    pbzs_heatmap[add_10] = (pbzs_heatmap[add_10] or 0) + 10
-    for _, add in ipairs(add_05) do
-        pbzs_heatmap[add] = (pbzs_heatmap[add] or 0) + 5
-    end
-    for _, add in ipairs(add_03) do
-        pbzs_heatmap[add] = (pbzs_heatmap[add] or 0) + 3
-    end
-    for _, add in ipairs(add_02) do
-        pbzs_heatmap[add] = (pbzs_heatmap[add] or 0) + 2
-    end
-    for _, add in ipairs(add_01) do
-        pbzs_heatmap[add] = (pbzs_heatmap[add] or 0) + 1
-    end
-    print(pbzs_heatmap)
-end
-
-local function pbzs_calculatecells(playerLocation)
-    local x = playerLocation[1]
-    local y = playerLocation[2]
-    local add_10 = playerLocation
-    local add_05 = {{x+1,y},{x-1,y},{x,y+1},{x,y-1}}
-    local add_03 = {{x+1,y+1},{x-1,y-1},{x-1,y+1},{x+1,y-1},{x+2,y},{x-2,y},{x,y+2},{x,y-2}}
-    local add_02 = {{x+2,y+1},{x-2,y-1},{x-2,y+1},{x+2,y-1},{x-1,y+2},{x+1,y-2},{x+1,y+2},{x-1,y-2}}
-    local add_01 = {{x+2,y+2},{x-2,y-2},{x-2,y+2},{x+2,y-2}}
-
-    --create arrays with the cells that will get each level of heat increase (74 total in this configuration)
-    --01,02,03,02,01
-    --02,03,05,03,02
-    --03,05,10,05,03
-    --02,03,05,03,02
-    --01,02,03,02,01
-    
-    return add_10, add_05, add_03, add_02, add_01;
-end
-
-local function pbzs_spawn(heat, population_multiplier, peak_multiplier, peak_day)
-    --get locations of players
-    local playerLocation = player:getCell()
-    if playerLocation == nil then
-        return
-    end
-
-    --spawn zombies where the player is based on the heat map and game settings
-    --calls public variables PopulationMultiplier, PopulationPeakMultiplier, and PopulationPeakDay
-    day = getDaysSinceStart()
-    peak_percentage = day/PopulationPeakDay;
-    peak_percentage_multiplier = math.min(unpack({1, peak_percentage}));
-    for _, pbzs_hot_spots in ipairs(pbzs_heatmap) do
+    for key, value in pairs(pbzs_heatmap) do
         --get zombie count to add
-        local zombie_count = math.ceil((heat*PopulationMultiplier*PopulationPeakMultiplier*peak_percentage_multiplier)/10);
-
-        --get grid square in each cell
-        pbzs_location = pbzs_hot_spots.CellGetSquare()
-        pbzs_x = pbzs_location[1]
-        pbzs_y = pbzs_location[2]
-
+        local zombie_count = math.ceil((value*PopulationMultiplier*PopulationPeakMultiplier*peak_percentage_multiplier)/10)
+        print(value)
+        print(zombie_count)
+        print(key[1])
+        print(key[2])
+        
         --spawn zombies
-        addZombiesInOutfit(pbzs_x, pbzs_y, 0, zombie_count, outfit, 50);
+        if ((key[1] == not nil) and (key[2] == not nil) and (zombie_count > 0)) then
+            addZombiesInOutfit(key[0], key[1], 0, zombie_count, outfit, 50)
+        end
+
+        --reduce heat, and close out 0 value cells
+        pbzs_heatmap[key] = pbzs_heatmap[key] - 1
+        if pbzs_heatmap[key] < 1 then
+            pbzs_heatmap[key] = nil
+        end
     end
+end
+
+local function pbzs_get_player_xyz(pbzs_player)
+    local player_cell = pbzs_player:getCell()
+    local player_x = math.floor(pbzs_player:getX())
+    local player_y = math.floor(pbzs_player:getY())
+    local player_z = math.floor(pbzs_player:getZ())
+
+    return player_cell, player_x, player_y, player_z
+end
+
+local function pbzs_add_heat(pbzs_player)
+    local player_cell, player_x, player_y, player_z = pbzs_get_player_xyz(pbzs_player)
+    
+    --get points around the players location to add heat to
+    local add_10 = {player_x,player_y}
+    local add_05 = {{player_x+300,player_y},{player_x-300,player_y},{player_x,player_y+300},{player_x,player_y-300}}
+    local add_03 = {{player_x+300,player_y+300},{player_x-300,player_y-300},{player_x-300,player_y+300},{player_x+300,player_y-300},{player_x+600,player_y},{player_x-600,player_y},{player_x,player_y+600},{player_x,player_y-600}}
+    local add_02 = {{player_x+600,player_y+300},{player_x-600,player_y-300},{player_x-600,player_y+300},{player_x+600,player_y-300},{player_x-300,player_y+600},{player_x+300,player_y-600},{player_x+300,player_y+600},{player_x-300,player_y-600}}
+    local add_01 = {{player_x+600,player_y+600},{player_x-600,player_y-600},{player_x-600,player_y+600},{player_x+600,player_y-600}}
+
+    pbzs_heatmap[add_10] = 10
+    for key, value in ipairs(add_05) do
+        pbzs_heatmap[value] = 5
+    end
+    for key, value in ipairs(add_03) do
+        pbzs_heatmap[value] = 3
+    end
+    for key, value in ipairs(add_02) do
+        pbzs_heatmap[value] = 2
+    end
+    for key, value in ipairs(add_01) do
+        pbzs_heatmap[value] = 1
+    end
+    return player_cell
 end
 
 local function pbzs_main()
-    pbzs_heatmap()
-    
-    --spawn zombies every 4-8 hours
-    --math.randomseed(os.time())
-    --pbzs_timer = pbzs_timer + math.random(1,2)
-    local pbzs_timer = 0
-    if pbzs_timer >= 0 then
-        pbzs_timer = 0
+    --every hour, get the players location, add heat to the area around the player, and spawns zombies everywhere there's heat
+    for pbzs_playerindex = 0, getNumActivePlayers() - 1 do
+        local pbzs_player = getSpecificPlayer(pbzs_playerindex)
+        local player_cell = pbzs_add_heat(pbzs_player)
         pbzs_spawn()
     end
+    print("success!")
 end
 
 Events.EveryHours.Add(pbzs_main)
