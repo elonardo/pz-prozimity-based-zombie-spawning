@@ -68,10 +68,18 @@ local function pbzs_add_heat(pbzs_player)
     --01,01,01,01,01
 
     for key, value in ipairs(add_02) do
-        pbzs_heatmap[value] = (value + 2 or 2)
+        if pbzs_heatmap[value] == not nil then
+            pbzs_heatmap[value] = pbzs_heatmap[value] + 2
+        else
+            pbzs_heatmap[value] = 2
+        end
     end
     for key, value in ipairs(add_01) do
-        pbzs_heatmap[value] = (value + 1 or 1)
+        if pbzs_heatmap[value] == not nil then
+            pbzs_heatmap[value] = pbzs_heatmap[value] + 1
+        else
+            pbzs_heatmap[value] = 1
+        end
     end
     return player_x, player_y
 end
