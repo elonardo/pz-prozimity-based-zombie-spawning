@@ -1,7 +1,8 @@
 pbzs = pbzs
 pbzs_heatmap = {}
+pbzs_sleeping_hours = 0
 
-local function pbzs_spawn()
+local function pbzs_spawn(pbzs_player)
     --get the days elapsed and the population peak day to calculate what percentage of the peak multiplier should be applied
     local day = GameTime.getInstance():getDaysSurvived()
     local PopulationPeakDay = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakDay"):getValue()
@@ -16,10 +17,6 @@ local function pbzs_spawn()
         if key == not nil then
             --get zombie count to add. Cannot be less than 0 or more than 50 per hour
             local zombie_count = math.min(math.max(math.ceil(-4+2^(value/24)), 0),50)
-            print(value)
-            print(zombie_count)
-            print(key[1])
-            print(key[2])
 
             --spawn zombies
             if zombie_count > 0 then
@@ -80,17 +77,28 @@ local function pbzs_add_heat(pbzs_player)
 end
 
 local function pbzs_main()
-    --every hour, get the players location, add heat to the area around the player, and spawn zombies
-    for pbzs_playerindex = 0, getNumActivePlayers() - 1 do
-        local pbzs_player = getSpecificPlayer(pbzs_playerindex)
-        pbzs_add_heat(pbzs_player)
-        pbzs_spawn()
+    --check if the player is asleep, and if they are instead of spawning increment sleeping hours to increase the spawn rate when they wake up
+    if pbsz_player:isAsleep() then
+        pbzs_sleeping_hours = pbzs_sleeping_hours + 1
+    else
+        local i = 0
+        while i <= pbzs_sleeping_hours do
+            --every hour, get the players location, add heat to the area around the player, and spawn zombies
+            for pbzs_playerindex = 0, getNumActivePlayers() - 1 do
+                local pbzs_player = getSpecificPlayer(pbzs_playerindex)
+                pbzs_add_heat(pbzs_player)
+                pbzs_spawn(pbzs_player)
+            end
+            i = i + 1
+        end
+        pbzs_sleeping_hours = 0
+        print("displaying heatmap\n")
+        for key, value in pairs(pbzs_heatmap) do
+            print(key[1],",",key[2],": ",value,"\n")
+        end
+        print("proximity based zombie spawning succesful")
+        
     end
-    print("displaying heatmap\n")
-    for key, value in pairs(pbzs_heatmap) do
-        print(key[1],",",key[2],": ",value,"\n")
-    end
-    print("proximity based zombie spawning succesful")
 end
 
 Events.EveryHours.Add(pbzs_main)
