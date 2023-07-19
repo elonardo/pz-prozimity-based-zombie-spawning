@@ -3,21 +3,28 @@ pbzs_heatmap = {}
 
 local function pbzs_spawn()    
     --get the days elapsed and the population peak day to calculate what percentage of the peak multiplier should be applied
-    day = GameTime.getInstance():getDaysSurvived()
+    local day = GameTime.getInstance():getDaysSurvived()
     local PopulationPeakDay = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakDay"):getValue()
-    peak_percentage = ((1 + day)/PopulationPeakDay)
-    peak_percentage_multiplier = math.min(unpack({1, peak_percentage}))
+    local peak_percentage = ((1 + day)/PopulationPeakDay)
+    local peak_percentage_multiplier = math.min(unpack({1, peak_percentage}))
     --get the population peak multiplier and population multiplier
-    local PopulationPeakMultiplier = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakMultiplier"):getValue()
+    local PopulationPeakMultiplier = math.max(SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakMultiplier"):getValue() - 1, 0)
     local PopulationMultiplier = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationMultiplier"):getValue()
 
     for key, value in pairs(pbzs_heatmap) do
-        --get zombie count to add
-        local zombie_count = math.ceil((value*PopulationMultiplier*PopulationPeakMultiplier*peak_percentage_multiplier)/10)
+        --get zombie count to add. Cannot be less than 0 or more than 50 per hour
+        local zombie_count = math.min(math.max(math.ceil(-4+2^(value/24)), 0),50)
         print(value)
         print(zombie_count)
         print(key[1])
         print(key[2])
+
+        --get coordinates of a random square in the cell at which to spawn zombies
+        math.randomseed(os.time())
+        local random1 = math.random(1,299)
+        local random2 = math.random(1,299)
+        local spawn_x = key[1] * 300 + random1
+        local spawn_y = key[2] * 300 + random2
         
         --spawn zombies
         if ((key[1] == not nil) and (key[2] == not nil) and (zombie_count > 0)) then
