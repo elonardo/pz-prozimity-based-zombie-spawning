@@ -77,19 +77,20 @@ local function pbzs_add_heat(pbzs_player)
 end
 
 local function pbzs_main()
-    --check if the player is asleep, and if they are instead of spawning increment sleeping hours to increase the spawn rate when they wake up
-    if pbsz_player:isAsleep() then
-        pbzs_sleeping_hours = pbzs_sleeping_hours + 1
-    else
-        local i = 0
-        while i <= pbzs_sleeping_hours do
-            --every hour, get the players location, add heat to the area around the player, and spawn zombies
-            for pbzs_playerindex = 0, getNumActivePlayers() - 1 do
-                local pbzs_player = getSpecificPlayer(pbzs_playerindex)
+    --every hour, get the players location, add heat to the area around the player, and spawn zombies
+    for pbzs_playerindex = 0, getNumActivePlayers() - 1 do
+        local pbzs_player = getSpecificPlayer(pbzs_playerindex)
+        --check if the player is asleep, and if they are instead of spawning increment sleeping hours to increase the spawn rate when they wake up
+        --WARNING: in multiplayer, if only one player sleeps this will cause problems TODO: add a check to see if game is multiplayer
+        if pbsz_player:isAsleep() then
+            pbzs_sleeping_hours = pbzs_sleeping_hours + 1
+        else
+            local i = 0
+            while i <= pbzs_sleeping_hours do
                 pbzs_add_heat(pbzs_player)
                 pbzs_spawn(pbzs_player)
+                i = i + 1
             end
-            i = i + 1
         end
         pbzs_sleeping_hours = 0
         print("displaying heatmap\n")
