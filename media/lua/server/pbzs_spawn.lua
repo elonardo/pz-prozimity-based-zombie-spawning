@@ -12,29 +12,32 @@ local function pbzs_spawn()
     local PopulationMultiplier = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationMultiplier"):getValue()
 
     for key, value in pairs(pbzs_heatmap) do
-        --get zombie count to add. Cannot be less than 0 or more than 50 per hour
-        local zombie_count = math.min(math.max(math.ceil(-4+2^(value/24)), 0),50)
-        print(value)
-        print(zombie_count)
-        print(key[1])
-        print(key[2])
+        if key == not nil then
+            --get zombie count to add. Cannot be less than 0 or more than 50 per hour
+            local zombie_count = math.min(math.max(math.ceil(-4+2^(value/24)), 0),50)
+            print(value)
+            print(zombie_count)
+            print(key[1])
+            print(key[2])
 
-        --get coordinates of a random square in the cell at which to spawn zombies
-        math.randomseed(os.time())
-        local random1 = math.random(1,299)
-        local random2 = math.random(1,299)
-        local spawn_x = key[1] * 300 + random1
-        local spawn_y = key[2] * 300 + random2
-        
-        --spawn zombies
-        if ((key[1] == not nil) and (key[2] == not nil) and (zombie_count > 0)) then
-            addZombiesInOutfit(key[0], key[1], 0, zombie_count, outfit, 50)
-        end
+            --spawn zombies
+            if zombie_count > 0 then
+                --get coordinates of a random square in the cell at which to spawn zombies
+                math.randomseed(os.time())
+                local random1 = math.random(1,299)
+                local random2 = math.random(1,299)
+                local spawn_x = key[1] * 300 + random1
+                local spawn_y = key[2] * 300 + random2
 
-        --reduce heat, and close out 0 value cells
-        pbzs_heatmap[key] = pbzs_heatmap[key] - 1
-        if pbzs_heatmap[key] < 1 then
-            pbzs_heatmap[key] = nil
+                addZombiesInOutfit(spawn_x, spawn_y, 0, zombie_count, outfit, 50)
+            end
+
+            --reduce heat, and close out 0 value cells
+            pbzs_heatmap[key] = pbzs_heatmap[key] - 1
+            if pbzs_heatmap[key] < 1 then
+                pbzs_heatmap[key] = nil
+                table.remove(pbzs_heatmap, key)
+            end
         end
     end
 end
@@ -81,6 +84,10 @@ local function pbzs_main()
         local pbzs_player = getSpecificPlayer(pbzs_playerindex)
         pbzs_add_heat(pbzs_player)
         pbzs_spawn()
+    end
+    print("displaying heatmap")
+    for key, value in pairs(pbzs_heatmap) do
+        print(key[1],", ",key[2],", ",value)
     end
     print("proximity based zombie spawning succesful")
 end
