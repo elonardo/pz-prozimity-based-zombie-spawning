@@ -82,7 +82,7 @@ local function pbzs_main()
         local pbzs_player = getSpecificPlayer(pbzs_playerindex)
         --check if the player is asleep, and if they are instead of spawning increment sleeping hours to increase the spawn rate when they wake up
         --WARNING: in multiplayer, if only one player sleeps this will cause problems TODO: add a check to see if game is multiplayer
-        if pbsz_player:isAsleep() then
+        if pbzs_player:isAsleep() then
             pbzs_sleeping_hours = pbzs_sleeping_hours + 1
         else
             local i = 0
