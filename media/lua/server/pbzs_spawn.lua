@@ -69,19 +69,11 @@ local function pbzs_add_heat(pbzs_player)
 end
 
 local function pbzs_main()
-    
-    local dont_spawn = {}
-
-    --every hour, get the players location, add heat to the area around the player, and add players location to the don't spawn cell
+    --every hour, get the players location, add heat to the area around the player, and spawn zombies
     for pbzs_playerindex = 0, getNumActivePlayers() - 1 do
         local pbzs_player = getSpecificPlayer(pbzs_playerindex)
-        local player_x, player_y = pbzs_add_heat(pbzs_player)
-        table.insert(dont_spawn, {player_x, player_y})
-    end
-
-    --every hour, spawn zombies
-    for pbzs_playerindex = 0, getNumActivePlayers() - 1 do
-        pbzs_spawn(dont_spawn)
+        pbzs_add_heat(pbzs_player)
+        pbzs_spawn()
     end
     print("proximity based zombie spawning succesful")
 end
