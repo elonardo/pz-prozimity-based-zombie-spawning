@@ -1,12 +1,13 @@
 pbzs = pbzs
 pbzs_heatmap = {}
 
-local function pbzs_spawn()    
+local function pbzs_spawn()
     --get the days elapsed and the population peak day to calculate what percentage of the peak multiplier should be applied
     local day = GameTime.getInstance():getDaysSurvived()
     local PopulationPeakDay = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakDay"):getValue()
     local peak_percentage = ((1 + day)/PopulationPeakDay)
     local peak_percentage_multiplier = math.min(unpack({1, peak_percentage}))
+
     --get the population peak multiplier and population multiplier
     local PopulationPeakMultiplier = math.max(SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationPeakMultiplier"):getValue() - 1, 0)
     local PopulationMultiplier = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationMultiplier"):getValue()
@@ -85,9 +86,9 @@ local function pbzs_main()
         pbzs_add_heat(pbzs_player)
         pbzs_spawn()
     end
-    print("displaying heatmap")
+    print("displaying heatmap\n")
     for key, value in pairs(pbzs_heatmap) do
-        print(key[1],", ",key[2],", ",value)
+        print(key[1],",",key[2],": ",value,"\n")
     end
     print("proximity based zombie spawning succesful")
 end
