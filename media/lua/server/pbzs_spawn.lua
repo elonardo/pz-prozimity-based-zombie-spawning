@@ -130,8 +130,11 @@ local function pbzs_main()
         end
         pbzs_sleeping_hours = 0
         print("displaying heatmap\n")
-        for key, value in pairs(pbzs_heatmap) do
-            print(key[1],",",key[2],": ",value,"\n")
+        for key, value in pbzs_heatmap do
+            local x = key
+            for key, value in y do
+                print(x,",",key,": ",value,"\n")
+            end
         end
         print("proximity based zombie spawning succesful")
         
