@@ -15,10 +15,12 @@ local function pbzs_spawn(pbzs_player)
 
     for key, value in pairs(pbzs_heatmap) do
         local x = key
+        print(x,type(x))
         local y_pair = value
         for key, value in pairs(y_pair) do
-            local y = value
+            local y = key
             local heat = value
+            print(y, type(y),heat,type(heat))
             --get zombie count to add. Cannot be less than 0 or more than 50 per hour
             local zombie_count = math.min(math.max(math.ceil(-4+2^(heat/24)), 0),50)
 
@@ -36,6 +38,7 @@ local function pbzs_spawn(pbzs_player)
                 end
             end
             --reduce heat, and close out 0 value cells
+            print(type(pbzs_heatmap[x][y]))
             pbzs_heatmap[x][y] = pbzs_heatmap[x][y] - 1
             if pbzs_heatmap[x][y] < 1 then
                 pbzs_heatmap[x][y] = nil
@@ -79,7 +82,7 @@ local function pbzs_add_heat(pbzs_player)
         local x = value[1]
         local y = value[2]
         if pbzs_heatmap[x] == not nil then
-            if pbzs_heatmap_y[x][y] == not nil then
+            if pbzs_heatmap[x][y] == not nil then
                 pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 200
             else
                 table.insert(pbzs_heatmap[x],y,200)
@@ -93,7 +96,7 @@ local function pbzs_add_heat(pbzs_player)
         local x = value[1]
         local y = value[2]
         if pbzs_heatmap[x] == not nil then
-            if pbzs_heatmap_y[x][y] == not nil then
+            if pbzs_heatmap[x][y] == not nil then
                 pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 100
             else
                 table.insert(pbzs_heatmap[x],y,100)
