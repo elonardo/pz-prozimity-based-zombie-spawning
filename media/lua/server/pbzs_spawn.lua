@@ -79,31 +79,35 @@ local function pbzs_add_heat(pbzs_player)
     --01,01,01,01,01
 
     for key, value in ipairs(add_02) do
-        local x = value[1]
-        local y = value[2]
-        if pbzs_heatmap[x] == not nil then
-            if pbzs_heatmap[x][y] == not nil then
-                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 200
+        if key == not nil then
+            local x = value[1]
+            local y = value[2]
+            if pbzs_heatmap[x] == not nil then
+                if pbzs_heatmap[x][y] == not nil then
+                    pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 200
+                else
+                    table.insert(pbzs_heatmap[x],y,200)
+                end
             else
+                pbzs_heatmap[x] = {}
                 table.insert(pbzs_heatmap[x],y,200)
             end
-        else
-            pbzs_heatmap[x] = {}
-            table.insert(pbzs_heatmap[x],y,200)
         end
     end
     for key, value in ipairs(add_01) do
-        local x = value[1]
-        local y = value[2]
-        if pbzs_heatmap[x] == not nil then
-            if pbzs_heatmap[x][y] == not nil then
-                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 100
+        if key == not nil then
+            local x = value[1]
+            local y = value[2]
+            if pbzs_heatmap[x] == not nil then
+                if pbzs_heatmap[x][y] == not nil then
+                    pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 100
+                else
+                    table.insert(pbzs_heatmap[x],y,100)
+                end
             else
+                pbzs_heatmap[x] = {}
                 table.insert(pbzs_heatmap[x],y,100)
             end
-        else
-            pbzs_heatmap[x] = {}
-            table.insert(pbzs_heatmap[x],y,100)
         end
     end
 end
