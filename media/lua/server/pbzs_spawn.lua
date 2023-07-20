@@ -14,27 +14,35 @@ local function pbzs_spawn(pbzs_player)
     local PopulationMultiplier = SandboxOptions.getInstance():getOptionByName("ZombieConfig.PopulationMultiplier"):getValue()
 
     for key, value in pairs(pbzs_heatmap) do
-        if key == not nil then
+        local x = key
+        local y_pair = value
+        for key, value in pairs(y_pair) do
+            local y = value
+            local heat = value
             --get zombie count to add. Cannot be less than 0 or more than 50 per hour
-            local zombie_count = math.min(math.max(math.ceil(-4+2^(value/24)), 0),50)
+            local zombie_count = math.min(math.max(math.ceil(-4+2^(heat/24)), 0),50)
 
             --spawn zombies
             if zombie_count > 0 then
                 --get coordinates of a random square in the cell at which to spawn zombies
-                math.randomseed(os.time())
-                local random1 = math.random(1,299)
-                local random2 = math.random(1,299)
-                local spawn_x = key[1] * 300 + random1
-                local spawn_y = key[2] * 300 + random2
+                local random1 = ZombRandBetween(1,299)
+                local random2 = ZombRandBetween(1,299)
+                local spawn_x = x * 300 + random1
+                local spawn_y = y * 300 + random2
 
-                addZombiesInOutfit(spawn_x, spawn_y, 0, zombie_count, outfit, 50)
+                for i = 1, zombie_count do
+                    addZombiesInOutfit(spawn_x, spawn_y, 0, zombie_count, outfit, 50)
+                    --getVirtualZombieManager():createRealZombie(spawn_x, spawn_y, 0)
+                end
             end
-
             --reduce heat, and close out 0 value cells
-            pbzs_heatmap[key] = pbzs_heatmap[key] - 1
-            if pbzs_heatmap[key] < 1 then
-                pbzs_heatmap[key] = nil
-                table.remove(pbzs_heatmap, key)
+            pbzs_heatmap[x][y] = pbzs_heatmap[x][y] - 1
+            if pbzs_heatmap[x][y] < 1 then
+                pbzs_heatmap[x][y] = nil
+                table.remove(pbzs_heatmap[x], y)
+                if pbzs_heatmap[x] == nil then
+                    table.remove(pbzs_heatmap, x)
+                end
             end
         end
     end
@@ -68,20 +76,33 @@ local function pbzs_add_heat(pbzs_player)
     --01,01,01,01,01
 
     for key, value in ipairs(add_02) do
-        if pbzs_heatmap[value] == not nil then
-            pbzs_heatmap[value] = pbzs_heatmap[value] + 2
+        local x = value[1]
+        local y = value[2]
+        if pbzs_heatmap[x] == not nil then
+            if pbzs_heatmap_y[x][y] == not nil then
+                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 200
+            else
+                table.insert(pbzs_heatmap[x],y,200)
+            end
         else
-            pbzs_heatmap[value] = 2
+            pbzs_heatmap[x] = {}
+            table.insert(pbzs_heatmap[x],y,200)
         end
     end
     for key, value in ipairs(add_01) do
-        if pbzs_heatmap[value] == not nil then
-            pbzs_heatmap[value] = pbzs_heatmap[value] + 1
+        local x = value[1]
+        local y = value[2]
+        if pbzs_heatmap[x] == not nil then
+            if pbzs_heatmap_y[x][y] == not nil then
+                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 100
+            else
+                table.insert(pbzs_heatmap[x],y,100)
+            end
         else
-            pbzs_heatmap[value] = 1
+            pbzs_heatmap[x] = {}
+            table.insert(pbzs_heatmap[x],y,100)
         end
     end
-    return player_x, player_y
 end
 
 local function pbzs_main()
