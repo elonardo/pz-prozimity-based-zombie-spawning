@@ -1,4 +1,4 @@
-pz-proximity-based-zombie-spawning
+proximity-based-zombie-spawning
 A Project Zomboid mod that spawns more zombies the longer you stay in an area
 
 This mod aims to give purpose to the nomadic PZ playstyle, by forcing you to frequently relocate lest the zombie hordes catch up with you and eat you. best used with other nomad mods like vehicle interiors etc.
