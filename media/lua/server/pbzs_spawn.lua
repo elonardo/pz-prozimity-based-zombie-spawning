@@ -34,7 +34,7 @@ local function pbzs_spawn(pbzs_player)
             local player_cell_y = math.floor(player_y/300)
 
             --get zombie count to add. Cannot be less than 0 or more than 50 per hour
-            local zombie_count = math.min(math.max(math.ceil(-4+2^(heat/24)), 0),50)
+            local zombie_count = math.min(math.max(math.ceil(-4+(2+peak_percentage_multiplier)*2^(1+heat/24)), 0),50)
             print("zombie count: ", zombie_count)
 
             --spawn zombies
