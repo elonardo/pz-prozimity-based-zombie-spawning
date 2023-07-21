@@ -1,12 +1,10 @@
-# pz-prozimity-based-zombie-spawning
+pz-prozimity-based-zombie-spawning
 A Project Zomboid mod that spawns more zombies the longer you stay in an area
 
-This mod aims to give purpose to the nomadic PZ playstyle, by forcing you to frequently relocate lest the zombie hordes catch up with you and eat you. best used with other
-nomad mods like vehicle interiors etc.
+This mod aims to give purpose to the nomadic PZ playstyle, by forcing you to frequently relocate lest the zombie hordes catch up with you and eat you. best used with other nomad mods like vehicle interiors etc.
 
 Current Functionality:
-Every hour, the mod adds "heat" at squares at and around each player, stores those heat values in a lua table, spawns zombies at each square in the lua "heat map" table, 
-and reduces the amount of heat at each point in the table. The net effect of this, is that every hour 45 zombies are queued to be spawned over a period of 5 hours around 
+Every hour, the mod adds "heat" at squares at and around each player, stores those heat values in a lua table, spawns zombies in the players chunk proportional to the heat in the player's cell, and reduces the amount of heat at each point in the table. The net effect of this, is that every hour 45 zombies are queued to be spawned over a period of 5 hours around 
 the player's location, so the longer the player stays in an area, the more zombies will accumulate there, and the faster those zombies will accumulate. The heat value 
 (and therefore number of zombies spawned) scales with your peak day multiplier, so when you hit your peak day, more zombies will spawn near you.
 
