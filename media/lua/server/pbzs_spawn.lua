@@ -3,6 +3,15 @@ pbzs_heatmap = {}
 pbzs_heatmap_y = {}
 pbzs_sleeping_hours = 0
 
+local function pbzs_get_player_xyz(pbzs_player)
+    local player_cell = pbzs_player:getCell()
+    local player_x = math.floor(pbzs_player:getX())
+    local player_y = math.floor(pbzs_player:getY())
+    local player_z = math.floor(pbzs_player:getZ())
+
+    return player_cell, player_x, player_y, player_z
+end
+
 local function pbzs_spawn(pbzs_player)
     --get the days elapsed and the population peak day to calculate what percentage of the peak multiplier should be applied
     local day = GameTime.getInstance():getDaysSurvived()
@@ -19,23 +28,27 @@ local function pbzs_spawn(pbzs_player)
         for key, value in pairs(pbzs_heatmap[x]) do
             local y = key
             local heat = pbzs_heatmap[x][y]
+            local player_cell, player_x, player_y, player_z = pbzs_get_player_xyz(pbzs_player)
+            --get cell coordinates from square
+            local player_cell_x = math.floor(player_x/300)
+            local player_cell_y = math.floor(player_y/300)
 
             --get zombie count to add. Cannot be less than 0 or more than 50 per hour
             local zombie_count = math.min(math.max(math.ceil(-4+2^(heat/24)), 0),50)
             print("zombie count: ", zombie_count)
 
             --spawn zombies
-            if zombie_count > 0 then
+            if zombie_count > 0 and x == player_cell_x and y == player_cell_y then
                 --get coordinates of a random square in the cell at which to spawn zombies
-                local random1 = ZombRandBetween(1,299)
-                local random2 = ZombRandBetween(1,299)
-                local spawn_x = x * 300 + random1
-                local spawn_y = y * 300 + random2
+                local random1 = ZombRandBetween(10,50)
+                local random2 = ZombRandBetween(10,50)
+                local spawn_x = player_x - 90
+                local spawn_y = player_y - 90
+                local spawn_x2 = spawn_x + random1
+                local spawn_y2 = spawn_y + random2
 
-                for i = 1, zombie_count do
-                    addZombiesInOutfit(spawn_x, spawn_y, 0, zombie_count, outfit, 50)
-                    --getVirtualZombieManager():createRealZombie(spawn_x, spawn_y, 0)
-                end
+                spawnHorde(spawn_x, spawn_y, spawn_x2, spawn_y2, 0, zombie_count)
+                print("spawned ", zombie_count, " zombies")
             end
 
             --reduce heat, and close out 0 value cells
@@ -49,15 +62,6 @@ local function pbzs_spawn(pbzs_player)
             end
         end
     end
-end
-
-local function pbzs_get_player_xyz(pbzs_player)
-    local player_cell = pbzs_player:getCell()
-    local player_x = math.floor(pbzs_player:getX())
-    local player_y = math.floor(pbzs_player:getY())
-    local player_z = math.floor(pbzs_player:getZ())
-
-    return player_cell, player_x, player_y, player_z
 end
 
 local function pbzs_add_heat(pbzs_player)
@@ -84,15 +88,15 @@ local function pbzs_add_heat(pbzs_player)
         --print(pbzs_heatmap[x])
         if type(pbzs_heatmap[x]) == "table" then
             if type(pbzs_heatmap[x][y]) == "number" then
-                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 200
+                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 2
                 --print("add: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             else
-                table.insert(pbzs_heatmap[x],y,200)
+                table.insert(pbzs_heatmap[x],y,2)
                 --print("new y: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             end
         else
             pbzs_heatmap[x] = {}
-            table.insert(pbzs_heatmap[x],y,200)
+            table.insert(pbzs_heatmap[x],y,2)
             --print("new xy: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
         end
     end
@@ -103,15 +107,15 @@ local function pbzs_add_heat(pbzs_player)
         --print(pbzs_heatmap[x])
         if type(pbzs_heatmap[x]) == "table" then
             if type(pbzs_heatmap[x][y]) == "number" then
-                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 100
+                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 1
                 --print("add: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             else
-                table.insert(pbzs_heatmap[x],y,100)
+                table.insert(pbzs_heatmap[x],y,1)
                 --print("new y: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             end
         else
             pbzs_heatmap[x] = {}
-            table.insert(pbzs_heatmap[x],y,100)
+            table.insert(pbzs_heatmap[x],y,1)
             --print("new xy: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
         end
     end
