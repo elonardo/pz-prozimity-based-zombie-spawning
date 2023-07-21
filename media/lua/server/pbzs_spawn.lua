@@ -1,5 +1,6 @@
 pbzs = pbzs
 pbzs_heatmap = {}
+pbzs_heatmap_y = {}
 pbzs_sleeping_hours = 0
 
 local function pbzs_spawn(pbzs_player)
@@ -15,14 +16,13 @@ local function pbzs_spawn(pbzs_player)
 
     for key, value in pairs(pbzs_heatmap) do
         local x = key
-        print(x,type(x))
-        local y_pair = value
-        for key, value in pairs(y_pair) do
+        for key, value in pairs(pbzs_heatmap[x]) do
             local y = key
-            local heat = value
-            print(y, type(y),heat,type(heat))
+            local heat = pbzs_heatmap[x][y]
+
             --get zombie count to add. Cannot be less than 0 or more than 50 per hour
             local zombie_count = math.min(math.max(math.ceil(-4+2^(heat/24)), 0),50)
+            print("zombie count: ", zombie_count)
 
             --spawn zombies
             if zombie_count > 0 then
@@ -31,15 +31,14 @@ local function pbzs_spawn(pbzs_player)
                 local random2 = ZombRandBetween(1,299)
                 local spawn_x = x * 300 + random1
                 local spawn_y = y * 300 + random2
-                print(zombie_count)
 
                 for i = 1, zombie_count do
                     addZombiesInOutfit(spawn_x, spawn_y, 0, zombie_count, outfit, 50)
                     --getVirtualZombieManager():createRealZombie(spawn_x, spawn_y, 0)
                 end
             end
+
             --reduce heat, and close out 0 value cells
-            print(type(pbzs_heatmap[x][y]))
             pbzs_heatmap[x][y] = pbzs_heatmap[x][y] - 1
             if pbzs_heatmap[x][y] < 1 then
                 pbzs_heatmap[x][y] = nil
@@ -72,8 +71,6 @@ local function pbzs_add_heat(pbzs_player)
     local add_02 = {{player_x,player_y},{player_x+1,player_y},{player_x-1,player_y},{player_x,player_y+1},{player_x,player_y-1},{player_x+1,player_y+1},{player_x-1,player_y-1},{player_x-1,player_y+1},{player_x+1,player_y-1}}
     local add_01 = {{player_x+2,player_y},{player_x-2,player_y},{player_x,player_y+2},{player_x,player_y-2},{player_x+2,player_y+1},{player_x-2,player_y-1},{player_x-2,player_y+1},{player_x+2,player_y-1},{player_x-1,player_y+2},{player_x+1,player_y-2},{player_x+1,player_y+2},{player_x-1,player_y-2},{player_x+2,player_y+2},{player_x-2,player_y-2},{player_x-2,player_y+2},{player_x+2,player_y-2}}
 
-    print(add_02[1][1],add_02[1][2])
-
     --adds heat in the following pattern:
     --01,01,01,01,01
     --01,02,02,02,01
@@ -84,36 +81,38 @@ local function pbzs_add_heat(pbzs_player)
     for key, value in ipairs(add_02) do
         local x = value[1]
         local y = value[2]
-        print(x,y)
-        if pbzs_heatmap[x] == not nil then
-            if pbzs_heatmap[x][y] == not nil then
+        --print(pbzs_heatmap[x])
+        if type(pbzs_heatmap[x]) == "table" then
+            if type(pbzs_heatmap[x][y]) == "number" then
                 pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 200
-                print(200)
+                --print("add: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             else
                 table.insert(pbzs_heatmap[x],y,200)
-                print(200)
+                --print("new y: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             end
         else
             pbzs_heatmap[x] = {}
             table.insert(pbzs_heatmap[x],y,200)
-            print(200)
+            --print("new xy: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
         end
     end
+
     for key, value in ipairs(add_01) do
         local x = value[1]
         local y = value[2]
-        if pbzs_heatmap[x] == not nil then
-            if pbzs_heatmap[x][y] == not nil then
+        --print(pbzs_heatmap[x])
+        if type(pbzs_heatmap[x]) == "table" then
+            if type(pbzs_heatmap[x][y]) == "number" then
                 pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 100
-                print(100)
+                --print("add: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             else
                 table.insert(pbzs_heatmap[x],y,100)
-                print(100)
+                --print("new y: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             end
         else
             pbzs_heatmap[x] = {}
             table.insert(pbzs_heatmap[x],y,100)
-            print(100)
+            --print("new xy: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
         end
     end
 end
@@ -138,13 +137,13 @@ local function pbzs_main()
         print("displaying heatmap\n")
         for key, value in pairs(pbzs_heatmap) do
             local x = key
-            local y_pair = value
-            for key, value in pairs(y_pair) do
-                print(x,",",key,": ",value,"\n")
+            for key, value in pairs(pbzs_heatmap[x]) do
+                local y = key
+                local heat = pbzs_heatmap[x][y]
+                print(x,", ",y,": ",heat,"\n")
             end
         end
         print("proximity based zombie spawning succesful")
-        
     end
 end
 
