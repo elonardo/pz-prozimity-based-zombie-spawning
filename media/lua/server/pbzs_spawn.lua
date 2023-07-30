@@ -2,6 +2,7 @@ pbzs = pbzs
 pbzs_heatmap = {}
 pbzs_heatmap_y = {}
 pbzs_sleeping_hours = 0
+pbzs_cooldown = 2
 
 local function pbzs_get_player_xyz(pbzs_player)
     local player_cell = pbzs_player:getCell()
@@ -34,7 +35,7 @@ local function pbzs_spawn(pbzs_player)
             local player_cell_y = math.floor(player_y/300)
 
             --get zombie count to add. Cannot be less than 0 or more than 50 per hour
-            local zombie_count = math.min(math.max(math.ceil(-4+(2+peak_percentage_multiplier)*2^(1+heat/24)), 0),50)
+            local zombie_count = math.min(math.max(math.ceil(-4+(2+peak_percentage_multiplier)*2^(1+heat/240)), 0),50)
             print("zombie count: ", zombie_count)
 
             --spawn zombies
@@ -52,7 +53,7 @@ local function pbzs_spawn(pbzs_player)
             end
 
             --reduce heat, and close out 0 value cells
-            pbzs_heatmap[x][y] = pbzs_heatmap[x][y] - 1
+            pbzs_heatmap[x][y] = pbzs_heatmap[x][y] - pbzs_cooldown
             if pbzs_heatmap[x][y] < 1 then
                 pbzs_heatmap[x][y] = nil
                 table.remove(pbzs_heatmap[x], y)
@@ -74,6 +75,7 @@ local function pbzs_add_heat(pbzs_player)
     --get points around the players location to add heat to
     local add_02 = {{player_x,player_y},{player_x+1,player_y},{player_x-1,player_y},{player_x,player_y+1},{player_x,player_y-1},{player_x+1,player_y+1},{player_x-1,player_y-1},{player_x-1,player_y+1},{player_x+1,player_y-1}}
     local add_01 = {{player_x+2,player_y},{player_x-2,player_y},{player_x,player_y+2},{player_x,player_y-2},{player_x+2,player_y+1},{player_x-2,player_y-1},{player_x-2,player_y+1},{player_x+2,player_y-1},{player_x-1,player_y+2},{player_x+1,player_y-2},{player_x+1,player_y+2},{player_x-1,player_y-2},{player_x+2,player_y+2},{player_x-2,player_y-2},{player_x-2,player_y+2},{player_x+2,player_y-2}}
+    local add_00 = {{player_x+3,player_y},{player_x-3,player_y},{player_x,player_y+3},{player_x,player_y-3},{player_x+3,player_y+1},{player_x-3,player_y-1},{player_x-1,player_y+3},{player_x+1,player_y-3},{player_x+3,player_y+2},{player_x-3,player_y+2},{player_x+2,player_y+3},{player_x+2,player_y-3},{player_x+3,player_y-2},{player_x-3,player_y-2},{player_x-2,player_y+3},{player_x-2,player_y-3},{player_x+3,player_y-3},{player_x-3,player_y-3},{player_x+3,player_y+3},{player_x-3,player_y+3},{player_x+3,player_y+3},{player_x+3,player_y-3},{player_x-3,player_y+3},{player_x-3,player_y-3}}
 
     --adds heat in the following pattern:
     --01,01,01,01,01
@@ -88,7 +90,7 @@ local function pbzs_add_heat(pbzs_player)
         --print(pbzs_heatmap[x])
         if type(pbzs_heatmap[x]) == "table" then
             if type(pbzs_heatmap[x][y]) == "number" then
-                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 2
+                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 20
                 --print("add: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             else
                 table.insert(pbzs_heatmap[x],y,2)
@@ -107,7 +109,26 @@ local function pbzs_add_heat(pbzs_player)
         --print(pbzs_heatmap[x])
         if type(pbzs_heatmap[x]) == "table" then
             if type(pbzs_heatmap[x][y]) == "number" then
-                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 1
+                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + 10
+                --print("add: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
+            else
+                table.insert(pbzs_heatmap[x],y,1)
+                --print("new y: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
+            end
+        else
+            pbzs_heatmap[x] = {}
+            table.insert(pbzs_heatmap[x],y,1)
+            --print("new xy: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
+        end
+    end
+
+    for key, value in ipairs(add_00) do
+        local x = value[1]
+        local y = value[2]
+        --print(pbzs_heatmap[x])
+        if type(pbzs_heatmap[x]) == "table" then
+            if type(pbzs_heatmap[x][y]) == "number" then
+                pbzs_heatmap[x][y] = pbzs_heatmap[x][y] + pbzs_cooldown
                 --print("add: ", x," ",pbzs_heatmap[x]," ",pbzs_heatmap[x][y])
             else
                 table.insert(pbzs_heatmap[x],y,1)
