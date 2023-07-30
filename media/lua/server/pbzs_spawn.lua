@@ -4,6 +4,11 @@ pbzs_heatmap_y = {}
 pbzs_sleeping_hours = 0
 pbzs_cooldown = 2
 pbzs_last_pos = {1,1,1}
+pbzs_radio_uniques = {0,0,0}
+
+local function pbzs_radio()
+    --
+end
 
 local function pbzs_get_player_xyz(pbzs_player)
     local player_cell = pbzs_player:getCell()
