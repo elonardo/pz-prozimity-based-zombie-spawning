@@ -1,0 +1,26 @@
+pbzs_EN = {
+	pbzs_generic = "All units be advised:"
+	pbzs_generic_cool = "zombie activity nominal"
+	pbzs_generic_warm = "elevated zombie activity in sector "
+	pbzs_generic_hot = "extreme zombie activity in sector "
+	
+	pbzs_warm = "elevated zombie activity detected in "
+	pbzs_hot = "extreme zombie activity detected in "
+	
+	pbzs_muldraugh = "Muldraugh"
+	pbzs_march_ridge = "March Ridge"
+	pbzs_rosewood = "Rosewood"
+	pbzs_louisville = "Louisville"
+	pbzs_riverside = "Riverside"
+	pbzs_west_point = "West Point"
+	pbzs_raven_creek = "Raven Creek"
+	
+	pbzs_fort_redstone_warm = "Fort Redstone is on high alert"
+	pbzs_fort_redstone_hot = "Fort Redstone has been overrun"
+	
+	pbzs_prison_warm = "Rioting reported at Rosewood Prison"
+	pbzs_prison_hot = "Major breach reported at Rosewood Prison"
+	
+	pbzs_intel_station_warm = "station Zulu-1-8-4-1 requests immidiate assistance"
+	pbzs_intel_station_hot = "negative contact with station Zulu-1-8-4-1"
+}
