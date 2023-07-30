@@ -3,12 +3,24 @@ pbzs_heatmap = {}
 pbzs_heatmap_y = {}
 pbzs_sleeping_hours = 0
 pbzs_cooldown = 2
+pbzs_last_pos = {1,1,1}
 
 local function pbzs_get_player_xyz(pbzs_player)
     local player_cell = pbzs_player:getCell()
     local player_x = math.floor(pbzs_player:getX())
     local player_y = math.floor(pbzs_player:getY())
     local player_z = math.floor(pbzs_player:getZ())
+
+    --RV interiors fix. If player is in the area of the map where the RV interiors are, their location will be set to their last location
+    if player_x > 73 then
+        player_x = pbzs_last_pos[0]
+        player_y = pbzs_last_pos[1]
+        player_z = pbzs_last_pos[2]
+    else
+        pbzs_last_pos[0] = player_x
+        pbzs_last_pos[1] = player_y
+        pbzs_last_pos[2] = player_z
+    end
 
     return player_cell, player_x, player_y, player_z
 end
