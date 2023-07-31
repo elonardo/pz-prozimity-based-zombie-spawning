@@ -18,6 +18,10 @@ Planned Functionality:
 
 Changelog
 ---------------------------------------------------------
+v1.1.1
+07/30/21
+-hotfix coordinates bug
+
 V1.1
 07/30/2023
 -Changed zombie spawning formula to work on multiples of 10 and the cooling formula to work on multiples of 2, so areas take 5 times as long to cool as they do to heat up
